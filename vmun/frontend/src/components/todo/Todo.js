@@ -1,9 +1,16 @@
 import React, { Component } from "react";
 import "antd/dist/antd.css";
-import { Button, Form, Input, Row, Col, Card, Divider, Space } from "antd";
+import { Button, Form, Input, Row, Col, Card, Dropdown, Space, Menu } from "antd";
 import jQuery from "jquery";
 
 const layout = { labelCol: { span: 4 }, wrapperCol: { span: 20 } };
+
+const menu = (
+  <Menu>
+    <Menu.Item key="1">Delete task</Menu.Item>
+    <Menu.Item key="2">Reset values</Menu.Item>
+  </Menu>
+);
 
 class Todo extends Component {
   constructor(props) {
@@ -31,12 +38,11 @@ class Todo extends Component {
       })
       .then(tasks => {
         this.setState(() => {
-          console.log(tasks);
           return {
-            tasks,
-            loaded: true
+            tasks
           };
         });
+        console.log(this.state.tasks);
       });
   }
 
@@ -62,32 +68,35 @@ class Todo extends Component {
 
   render() {
     return (
-      <Space direction="vertical" size={20} style={{ display: "block", marginLeft: "auto", marginRight: "auto", maxWidth: 500 }}>
+      <Space direction="vertical" size={20}
+        style={{ paddingTop: 20, display: "block", marginLeft: "auto",
+          marginRight: "auto", maxWidth: 500 }}>
         {this.state.tasks.map(contact => {
           return (
-            <Card key={contact.key}>
+            <Card title={"Todo #" + contact.key} key={ contact.key } size="small" extra={ contact.date }>
               <Form {...layout} style={{ marginLeft: -10, marginRight: 10 }}>
                 <Form.Item label="Title" style={{ marginBottom: 0}}>
                   <Form.Item
                     name="title" onChange={this.handleTitleChange} 
-                    rules={[{ required: true, message: "Title cannot be empty" }]}>
+                    rules={[{ required: true, message: "Title cannot be empty" }]}
+                    initialValue={ contact.title }>
                     <Input placeholder="Title" />
                   </Form.Item>
                 </Form.Item>
                 <Form.Item label="Memo" style={{ marginBottom: 0}}>
                   <Form.Item
                     name="memo" onChange={this.handleMemoChange} 
-                    rules={[{ required: true, message: "Memo cannot be empty" }]}>
+                    rules={[{ required: true, message: "Memo cannot be empty" }]}
+                    initialValue={ contact.memo }>
                     <Input.TextArea placeholder="Memo" />
                   </Form.Item>
                 </Form.Item>
-                <Divider style={{ marginTop: 0 }}/>
                 <Row justify="end" align="top" style={{ marginBottom: -21 }}>
                   <Col>
-                    <Form.Item style={{ marginTop: -14 }}>
-                      <Button type="primary" htmlType="submit">
+                    <Form.Item style={{ marginTop: -9 }}>
+                      <Dropdown.Button htmlType="submit" overlay={menu} trigger={['click']}>
                         Submit
-                      </Button>
+                      </Dropdown.Button>
                     </Form.Item>
                   </Col>
                 </Row>
