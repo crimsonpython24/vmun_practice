@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import "antd/dist/antd.css";
-import { Button, Form, Input, Row, Col, Card, Dropdown, Space, Menu } from "antd";
+import { Button, Form, Input, Row, Col, Card, Space, message } from "antd";
 import jQuery from "jquery";
 
 const layout = { labelCol: { span: 4 }, wrapperCol: { span: 20 } };
@@ -26,6 +26,25 @@ async function postDeleteData(url = '', data = {}) {
   const formData = new FormData();
   formData.append('method', data.method);
   formData.append('keyid', data.keyid);
+
+  const response = await fetch(url, {
+    method: 'POST',
+    credentials: 'include',
+    mode: 'same-origin',
+    headers: {'X-CSRFToken': csrftoken,},
+    body: formData
+  });
+  return response.json();
+}
+
+async function postData(url = '', data = {}) {
+  let csrftoken = getCookie('csrftoken');
+
+  const formData = new FormData();
+  formData.append('method', data.method);
+  formData.append('title', data.title);
+  formData.append('memo', data.memo);
+  formData.append('idx', data.idx);
 
   const response = await fetch(url, {
     method: 'POST',
@@ -85,12 +104,12 @@ class Todo extends Component {
 
   handleSubmit = (event, idx) => {
     event => event.preventDefault();
-    posttasks('/', {
+    postData('/task/', {
       title: this.state.title, memo: this.state.memo,
       method: 'update', idx: idx
     })
     .then(tasks => {
-      if (tasks.success) {window.location = ('/');}
+      if (tasks.success) {message.success('Todo item updated!');}
     });
   }
 
@@ -103,12 +122,13 @@ class Todo extends Component {
         {this.state.tasks.map((contact, index) => {
           return (
             <Card title={"Todo #" + (index+1)} key={ contact.key } size="small" extra={ contact.date }>
-              <Form {...layout} style={{ marginLeft: -10, marginRight: 10 }}>
+              <Form {...layout} style={{ marginLeft: -10, marginRight: 10 }}
+                onFinish={(event) => this.handleSubmit(event, contact.key)}>
                 <Form.Item label="Title" style={{ marginBottom: 0}}>
                   <Form.Item
                     name="title" onChange={this.handleTitleChange} 
                     rules={[{ required: true, message: "Title cannot be empty" }]}
-                    initialValue={ this.state.tasks[index]['title'] }>
+                    initialValue={ contact.title }>
                     <Input placeholder="Title" />
                   </Form.Item>
                 </Form.Item>
@@ -116,7 +136,7 @@ class Todo extends Component {
                   <Form.Item
                     name="memo" onChange={this.handleMemoChange} 
                     rules={[{ required: true, message: "Memo cannot be empty" }]}
-                    initialValue={ this.state.tasks[index]['memo'] }>
+                    initialValue={ contact.memo }>
                     <Input.TextArea placeholder="Memo" />
                   </Form.Item>
                 </Form.Item>

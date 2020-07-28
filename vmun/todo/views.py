@@ -22,6 +22,12 @@ class IndexView(View):
         if 'delete' in request.POST.get("method"):
             Task.objects.filter(id=request.POST.get("keyid")).delete()
             return JsonResponse({'success': True})
+        elif 'update' in request.POST.get("method"):
+            td = Task.objects.filter(id=request.POST.get("idx"))
+            t = request.POST.get("title")
+            m = request.POST.get("memo")
+            td.update(title=t, memo=m)
+            return JsonResponse({'success': True})
         else:
             return JsonResponse({'success': False})
         
