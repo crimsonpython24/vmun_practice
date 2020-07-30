@@ -5,15 +5,9 @@
 {% endblock styles %}
 
 {% block content %}
-  <header>
-    <div id="navbar"></div>
-  </header>
   <div id="root"></div>
-  <footer class="footer">
-    <div id="footer"></div>
-  </footer>
 {% endblock content %}
 
 {% block js %}
-  <script src="{% static 'core/index.js' %}"></script>
+  <script src="{% static 'accounts/auth/auth_login.js' %}"></script>
 {% endblock js %}

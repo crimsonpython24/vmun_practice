@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "webpack --mode development ./src/index.js --output ./static/frontend/main.js",
     "build": "webpack --mode production ./src/index.js --output ./static/frontend/main.js",
-    "test": "webpack --mode development src\\index.js -o static\\frontend\\index.js --watch"
+    "test": "webpack --mode development src\\index.js -o static\\frontend\\index.js --watch",
+    "acc": "webpack --mode development src\\accounts\\auth\\auth_login.js -o static\\accounts\\auth\\auth_login.js --watch",
+    "idx": "webpack --mode development src\\core\\index.js -o static\\core\\index.js --watch"
   },
   "author": "",
   "license": "ISC",
