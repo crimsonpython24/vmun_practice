@@ -57,8 +57,7 @@ async function postData(url = '', data = {}) {
 }
 
 const confirm = (kid) => {
-  console.log(kid);
-  postDeleteData('/task/', { method: 'delete', keyid: kid})
+  postDeleteData(('/task/' + kid + '/'), { method: 'delete', keyid: kid})
     .then(data => {
       if (data.success) {window.location = '/task/';}
     })
@@ -72,7 +71,7 @@ class Todo extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      tasks: [], title: "", memo: "",
+      tasks: []
     };
     this.handleTitleChange = this.handleTitleChange.bind(this);
     this.handleMemoChange = this.handleMemoChange.bind(this);
@@ -83,11 +82,6 @@ class Todo extends Component {
   componentDidMount() {
     fetch("/task/api/task/")
       .then(response => {
-        if (response.status > 400) {
-          return this.setState(() => {
-            return { placeholder: "Something went wrong!" };
-          });
-        }
         return response.json();
       })
       .then(tasks => {
@@ -104,45 +98,47 @@ class Todo extends Component {
 
   handleSubmit = (event, idx) => {
     event => event.preventDefault();
-    postData('/task/', {
+    postData(('/task/' + kid + '/'), {
       title: this.state.title, memo: this.state.memo,
       method: 'update', idx: idx
     })
-    .then(tasks => {
-      if (tasks.success) {message.success('Todo item updated!');}
+    .then(task => {
+      if (task.success) {message.success('Todo item updated!');}
+      
     });
   }
 
   render() {
-    console.log(">>>", this.state.tasks);
     return (
       <Space direction="vertical" size={20}
         style={{ paddingTop: 20, display: "block", marginLeft: "auto",
           marginRight: "auto", maxWidth: 500 }}>
-        {this.state.tasks.map((contact, index) => {
+        {this.state.tasks.map((task, index) => {
           return (
-            <Card title={"Todo #" + (index+1)} key={ contact.key } size="small" extra={ contact.date }>
+            <Card title={"Todo #" + (index+1)} key={ task.key } size="small" extra={ task.date }>
               <Form {...layout} style={{ marginLeft: -10, marginRight: 10 }}
-                onFinish={(event) => this.handleSubmit(event, contact.key)}>
+                onFinish={(event) => this.handleSubmit(event, task.key)}>
+                <p>{ task.title }</p>
                 <Form.Item label="Title" style={{ marginBottom: 0}}>
                   <Form.Item
-                    name="title" onChange={this.handleTitleChange} 
+                    name="title" onChange={(event) => this.handleTitleChange(event, task)} 
                     rules={[{ required: true, message: "Title cannot be empty" }]}
-                    initialValue={ contact.title }>
+                    initialValue={ task.title }>
                     <Input placeholder="Title" />
                   </Form.Item>
                 </Form.Item>
+                <p>{ task.memo }</p>
                 <Form.Item label="Memo" style={{ marginBottom: 0}}>
                   <Form.Item
                     name="memo" onChange={this.handleMemoChange} 
                     rules={[{ required: true, message: "Memo cannot be empty" }]}
-                    initialValue={ contact.memo }>
+                    initialValue={ task.memo }>
                     <Input.TextArea placeholder="Memo" />
                   </Form.Item>
                 </Form.Item>
                 <Row justify="end" align="top" style={{ marginBottom: -21 }} gutter={[8, 0]}>
                   <Col style={{ marginTop: -9 }}>
-                    <Button danger onClick={() => confirm(contact.key)}>Delete</Button>
+                    <Button danger onClick={() => confirm(task.key)}>Delete</Button>
                   </Col>
                   <Col>
                     <Form.Item style={{ marginTop: -9 }}>

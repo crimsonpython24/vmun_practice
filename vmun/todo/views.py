@@ -13,10 +13,9 @@ class TaskListCreate(generics.ListCreateAPIView):
 
 
 class IndexView(View):
-    template_name = "todo/index.html"
-
     def get(self, request, *args, **kwargs):
-        return render(request, self.template_name)
+        # qs = Task.objects.all()
+        return JsonResponse({'objects': 'test'})    
 
     def post(self, request, *args, **kwargs):
         if 'delete' in request.POST.get("method"):
